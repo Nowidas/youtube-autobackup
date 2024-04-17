@@ -13,6 +13,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from pytube import YouTube
 
+from dotenv import load_dotenv, find_dotenv
+
 CLIENT_SECRETS_FILE = "client_secret.json"
 SCOPES = ["https://www.googleapis.com/auth/youtube"]
 API_SERVICE_NAME = "youtube"
@@ -191,15 +193,32 @@ class YoutubeManager:
 
 
 def main():
+    load_dotenv(find_dotenv())
+
     yt_manager = YoutubeManager()
 
+    all_videos = {}
+    all_playlists = yt_manager.playlist_list(os.getenv("USER_ID"))
+    for playlist in all_playlists:
+        playlist_id = playlist["id"]
+        playlist_vids = yt_manager.playlist_elements(playlist_id)
+        all_videos[playlist_id] = playlist_vids
+    with open("FULLALL_tracks.json", "w") as f:
+        json.dump(all_videos, f, indent=4)
+    # print(all_videos)
     # test for loading all items from playlist
     # if not os.path.exists("playlist.json"):
     #     all_videos = yt_manager.get_playlist("PLomXEcQ9kTsHrH58bvsUSfBT1PhZLc5MX")
     #     print(all_videos)
 
-    #     with open("playlist.json", "w") as f:
-    #         json.dump(all_videos, f, indent=4)
+    new_added = []
+    deleted = []
+
+    for new in new_added:
+        yt_manager.download_video(new)
+
+    for del_ in deleted:
+        pass
     # else:
     #     with open("playlist.json", "r") as f:
     #         all_videos = json.load(f)
