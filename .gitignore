@@ -1,2 +1,7 @@
 .venv
+__pycache__/
+
+
+# Google API credentials
 client_secret.json
+token.json
